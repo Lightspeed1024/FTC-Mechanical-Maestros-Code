@@ -2,11 +2,12 @@ name: "Folder Edit Check"
 
 on:
   pull_request:
-    paths:
-      - 'FtcRobotController/**' 
+    paths: 
+      - '**'
+      - '!teamcode/**'
 
 jobs:
-  fail-and-warn:
+  fail-restricted:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
