@@ -23,8 +23,9 @@ You are strictly blocked from pushing code directly to the `main` branch.
 
 Once your work is finished on your side branch, you must open a Pull Request (PR) on GitHub.
 
-* 📥 **Merge Commits:** We strongly recommend using the default **Merge Commit** option on GitHub. Do not squash your commits and do not rebase, unless absolutely necessary. We want to preserve your full step-by-step history log.
-* 👀 **Required Approvals:** You must receive approval from at least one member of the team before merging your pull request.
+* **Merge into <u>our</u> repository:** At the top of your pull request, make sure the leftmost dropdown in the top row shows "base: master" or "base repository: Lightspeed1024/FTC-Mechanical-Masters-Code", NOT "base repository: FIRST-Tech-Challenge/FtcRobotController". If it says the latter, click the dropdown and choose the one that says "Lightspeed1024/FTC-Mechanical-Masters-Code". Otherwise, you will be trying to edit the parent FTC repository and your PR will get blocked.
+* **Merge Commits:** We strongly recommend using the default **Merge Commit** option on GitHub. Do not squash your commits and do not rebase, unless absolutely necessary. We want to preserve your full step-by-step history log.
+* **Required Approvals:** You must receive approval from at least one member of the team before merging your pull request.
 
 ---
 
