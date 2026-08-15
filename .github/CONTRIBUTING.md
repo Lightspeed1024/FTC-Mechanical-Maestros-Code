@@ -10,7 +10,10 @@ ALL of the team code should go in this folder:
 TeamCode &rarr; src &rarr; main &rarr; java &rarr; org.firstinspires.ftc.teamcode
 NEVER edit any of the source files from the FtcRobotController folder or anything outside the TeamCode folder, as those are written by FIRST and editing them will cause the project to break.
 
-## 2. Branching
+## 2. Do not update the Gradle or anything else related to the SDK
+If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
+
+## 3. Branching
 
 To make changes, such as adding a feature or editing code, you must create a branch first. You are strictly blocked from pushing code directly to the `main` branch. 
 
@@ -22,7 +25,7 @@ To make changes, such as adding a feature or editing code, you must create a bra
 
 ---
 
-## 3. Pull Request & Merging Rules
+## 4. Pull Request & Merging Rules
 
 Once your work is finished on your side branch, you must open a Pull Request (PR) on GitHub.
 
@@ -32,10 +35,10 @@ Once your work is finished on your side branch, you must open a Pull Request (PR
 
 ---
 
-## 4. Do not update the Gradle or anything else related to the SDK
+## 5. Do not update the Gradle or anything else related to the SDK
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
 
-## 5. If you accidentally committed to main:
+## 6. If you accidentally committed to main:
 
 **Step 1: Create Your New Feature Branch**
 
