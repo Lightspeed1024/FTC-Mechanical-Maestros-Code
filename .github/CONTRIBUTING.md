@@ -6,7 +6,9 @@ Welcome to the team! To maintain an organized code workspace and a clean Git his
 
 ## 1. Where to write code
 
-ALL of the team code should go in the TeamCode folder of this project found in the root directory. NEVER edit any of the source files from the FtcRobotController folder, as those are written by FIRST and editing will cause programs to break.
+ALL of the team code should go in this folder: 
+TeamCode &rarr; src &rarr; main &rarr; java &rarr; org.firstinspires.ftc.teamcode
+NEVER edit any of the source files from the FtcRobotController folder or anything outside the TeamCode folder, as those are written by FIRST and editing them will cause the project to break.
 
 ## 2. Branching
 
