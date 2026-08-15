@@ -8,14 +8,15 @@ Welcome to the team! To maintain an organized code workspace and a clean Git his
 
 ALL of the team code should go in the TeamCode folder of this project found in the root directory. NEVER edit any of the source files from the FtcRobotController folder, as those are written by FIRST and editing will cause programs to break.
 
-## 2. Branching Strategy
+## 2. Branching
 
-You are strictly blocked from pushing code directly to the `main` branch. 
+To make changes, such as adding a feature or editing code, you must create a branch first. You are strictly blocked from pushing code directly to the `main` branch. 
 
 * **Rule:** Always create a new branch from the latest `main` branch before you start making changes.
 * **Naming Convention:** Use clear names for your branches so we know what you are doing:
   * For features: `feature/your-feature-name` (e.g., `feature/login-page`)
   * For bug fixes: `bugfix/your-fix-name` (e.g., `bugfix/broken-button`)
+* <u>**Commits:** Please use precise and descriptive titles and explanations for each commit to clearly describe what you changed.</u>
 
 ---
 
@@ -29,7 +30,10 @@ Once your work is finished on your side branch, you must open a Pull Request (PR
 
 ---
 
-## 4. If you accidentally commited to main:
+## 4. Do not update the Gradle or anything else related to the SDK
+If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
+
+## 5. If you accidentally committed to main:
 
 **Step 1: Create Your New Feature Branch**
 
