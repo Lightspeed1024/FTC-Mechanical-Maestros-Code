@@ -9,6 +9,7 @@ This is the repository for the FTC Mechanical Masters team robot code.
 Before running this project, make sure you have the following installed:
 
 - [GitHub Desktop](https://github.com) (Recommended for managing your work)
+- **Android Studio:** Android Studio is the primary and official Integrated Development Environment (IDE) recommended by FIRST for programming the robot. It is the industry-standard IDE used for advanced control and real-time debugging. The official Robot Controller code from FIRST is built from Android Studio, so ****this project will <u>exclusively use Android Studio (no VSCode).</u>**
 
 ### Installation & Setup
 
