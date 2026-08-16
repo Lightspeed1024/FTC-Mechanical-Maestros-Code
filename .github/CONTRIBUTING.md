@@ -21,8 +21,6 @@ Do NOT press the "sync fork" button on the home web page, merge from the upstrea
 ## 4. Do not update Gradle or anything else related to the SDK
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
 
----
-
 ## 5. Branching
 
 To make changes, such as adding a feature or editing code, you must create a branch first. You are strictly blocked from pushing code directly to the `main` branch. 
@@ -33,8 +31,6 @@ To make changes, such as adding a feature or editing code, you must create a bra
   * For bug fixes: `bugfix/your-fix-name` (e.g., `bugfix/broken-button`)
 * <u>**Commits:** Please use precise and descriptive titles and explanations for each commit to clearly describe what you changed.</u>
 
----
-
 ## 6. Pull Request & Merging Rules
 
 Once your work is finished on your side branch, you must open a Pull Request (PR) on GitHub.
@@ -42,8 +38,6 @@ Once your work is finished on your side branch, you must open a Pull Request (PR
 * **Merge into <u>our</u> repository:** At the top of your pull request, make sure the leftmost dropdown in the top row shows "base: master" or "base repository: Lightspeed1024/FTC-Mechanical-Masters-Code", NOT "base repository: FIRST-Tech-Challenge/FtcRobotController". If it says the latter, click the dropdown and choose the one that says "Lightspeed1024/FTC-Mechanical-Masters-Code". Otherwise, you will be trying to edit the parent FTC repository and your PR will get blocked.
 * **Merge Commits:** We strongly recommend using the default **Merge Commit** option on GitHub. Do not squash your commits and do not rebase, unless absolutely necessary. We want to preserve your full step-by-step history log.
 * **Required Approvals:** You must receive approval from at least one member of the team before merging your pull request.
-
----
 
 ## 7. Do not update Gradle or anything else related to the SDK
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
