@@ -9,6 +9,7 @@ Welcome to the team! To maintain an organized code workspace and a clean Git his
 ALL of the team code should go in this folder:
 
 TeamCode &rarr; src &rarr; main &rarr; java &rarr; org.firstinspires.ftc.teamcode
+Any code relating to the physical hardware connected to the robot should go in the mechanisms package inside that folder. OpMode code will then use objects from that folder.
 
 NEVER edit any of the source files from the FtcRobotController folder or anything outside the TeamCode folder, as those are written by FIRST and editing them will cause the project to break.
 
