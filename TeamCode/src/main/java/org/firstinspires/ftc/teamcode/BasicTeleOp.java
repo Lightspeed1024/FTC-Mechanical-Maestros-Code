@@ -5,15 +5,16 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-@TeleOp(name = "Basic TeleOp")
+@TeleOp
 public class BasicTeleOp extends LinearOpMode {
 
+
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
 
         // Declare motors
-        DcMotor leftMotor = hardwareMap.dcMotor.get("leftMotor");
-        DcMotor rightMotor = hardwareMap.dcMotor.get("rightMotor");
+        DcMotor leftMotor = hardwareMap.get(DcMotor.class, "leftMotor");
+        DcMotor rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
 
         // Reverse the right motor
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
