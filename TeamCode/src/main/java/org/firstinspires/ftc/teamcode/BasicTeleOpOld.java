@@ -5,17 +5,18 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
-import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
-
-@TeleOp
-public class BasicTeleOp extends LinearOpMode {
+@TeleOp(name = "Basic TeleOp")
+public class BasicTeleOpOld extends LinearOpMode {
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException {
 
         // Declare motors
-        BasicDrivetrain drivetrain = new BasicDrivetrain();
-        drivetrain.init(hardwareMap);
+        DcMotor leftMotor = hardwareMap.dcMotor.get("leftMotor");
+        DcMotor rightMotor = hardwareMap.dcMotor.get("rightMotor");
+
+        // Reverse the right motor
+        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Wait for the driver to press PLAY
         waitForStart();
@@ -48,8 +49,8 @@ public class BasicTeleOp extends LinearOpMode {
             }
 
             // Set motor powers
-            drivetrain.setLeftMotorSpeed(leftPower);
-            drivetrain.setRightMotorSpeed(rightPower);
+            leftMotor.setPower(leftPower);
+            rightMotor.setPower(rightPower);
 
             // Display motor power on the Driver Station
             telemetry.addData("Left Power", leftPower);
