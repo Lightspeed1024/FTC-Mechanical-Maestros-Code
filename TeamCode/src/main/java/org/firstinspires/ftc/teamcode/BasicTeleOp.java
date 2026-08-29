@@ -15,7 +15,7 @@ public class BasicTeleOp extends LinearOpMode {
 
         // Declare motors
         BasicDrivetrain drivetrain = new BasicDrivetrain();
-
+        drivetrain.init(hardwareMap);
 
         // Wait for the driver to press PLAY
         waitForStart();
