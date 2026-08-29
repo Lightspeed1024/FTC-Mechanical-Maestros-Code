@@ -31,6 +31,7 @@ To make changes, such as adding a feature or editing code, you must create a bra
   * For features: `feature/your-feature-name` (e.g., `feature/login-page`)
   * For bug fixes: `bugfix/your-fix-name` (e.g., `bugfix/broken-button`)
 * <u>**Commits:** Please use precise and descriptive titles and explanations for each commit to clearly describe what you changed.</u>
+* **Do not spam pull requests!** Only submit a pull request when your branch feature is fully developed and needs no more fixing. ALSO DO NOT APPROVE PULL REQUESTS RANDOMLY. Discuss it with other people in person or in the comments section of the PR.
 
 ## 6. Pull Request & Merging Rules
 
