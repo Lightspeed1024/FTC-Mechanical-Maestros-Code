@@ -8,13 +8,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @TeleOp
 public class BasicTeleOp extends LinearOpMode {
 
-
     @Override
     public void runOpMode() {
 
         // Declare motors
         DcMotor leftMotor = hardwareMap.get(DcMotor.class, "leftMotor");
-        DcMotor rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
+        DcMotor rightMotor = hardwareMap.dcMotor.get("rightMotor");
 
         // Reverse the right motor
         rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -60,4 +59,3 @@ public class BasicTeleOp extends LinearOpMode {
         }
     }
 }
-
