@@ -28,6 +28,8 @@ public class FastLaneAutonomous extends LinearOpMode {
         // Wait for the game to start (driver presses START)
         waitForStart();
 
+        if (isStopRequested()) return;
+
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
         drivetrain.driveInches(DRIVE_SPEED, 24, 24, 5.0);
