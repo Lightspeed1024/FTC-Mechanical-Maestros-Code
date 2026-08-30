@@ -60,5 +60,6 @@ public class BasicDrivetrain {
             case LEFT_MOTOR: return leftMotor.isBusy();
             case RIGHT_MOTOR: return rightMotor.isBusy();
         }
+        return false;
     }
 }
