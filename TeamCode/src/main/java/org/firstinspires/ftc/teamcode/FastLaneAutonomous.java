@@ -15,6 +15,7 @@ public class FastLaneAutonomous extends LinearOpMode {
 
     static final double     DRIVE_SPEED             = 1.0;      // Full speed ahead!
     static final double     TURN_SPEED              = 0.7;      // Slightly slower turning for precision but faster than TeleOp
+    private ElapsedTime runtime = new ElapsedTime();
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,12 +31,15 @@ public class FastLaneAutonomous extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        drivetrain.driveInches(DRIVE_SPEED, 24, 24, 5.0);
-        drivetrain.turnDegrees(TURN_SPEED, -90, 4.0);
-        drivetrain.driveInches(DRIVE_SPEED, 18, 18, 4.0);
-
+        runtime.reset();
+        // only run while opmode is still active and the timer has not expired
+        while (opModeIsActive() && runtime.seconds() < 120.0) {
+            // Step through each leg of the path,
+            // Note: Reverse movement is obtained by setting a negative distance (not speed)
+            drivetrain.driveInches(DRIVE_SPEED, 24, 24, 5.0);
+            drivetrain.turnDegrees(TURN_SPEED, -90, 4.0);
+            drivetrain.driveInches(DRIVE_SPEED, 18, 18, 4.0);
+        }
         telemetry.addData("Path", "Complete");
         telemetry.update();
         sleep(3000);  // pause to display final telemetry message.
