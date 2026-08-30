@@ -4,7 +4,7 @@ on:
   pull_request:
     paths: 
       - '**'
-      - '!teamcode/**'
+      - '!TeamCode/src/main/java/org/firstinspires/ftc/teamcode/**'
 
 jobs:
   fail-restricted:
