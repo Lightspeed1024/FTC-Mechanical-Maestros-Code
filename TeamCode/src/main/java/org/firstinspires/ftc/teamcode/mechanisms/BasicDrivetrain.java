@@ -105,7 +105,7 @@ public class BasicDrivetrain {
     }
 
     /**
-     * Method to perform a relative turn using degrees.
+     * Method to perform a relative turn using degrees. Positive is clockwise.
      * It converts degrees to the appropriate turn and calls driveInches using those measurements.
      * @param degrees   The degrees to turn the robot.
      * @param speed     The turning speed.
