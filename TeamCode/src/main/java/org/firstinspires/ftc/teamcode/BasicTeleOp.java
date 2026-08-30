@@ -2,19 +2,19 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
 
 @TeleOp
 public class BasicTeleOp extends LinearOpMode {
+    BasicDrivetrain drivetrain = new BasicDrivetrain();
+    private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
+    private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
 
     @Override
     public void runOpMode() throws InterruptedException{
 
         // Declare motors
-        BasicDrivetrain drivetrain = new BasicDrivetrain();
         drivetrain.init(hardwareMap);
 
         // Wait for the driver to press PLAY
@@ -48,14 +48,14 @@ public class BasicTeleOp extends LinearOpMode {
             }
 
             // Set motor powers
-            drivetrain.setLeftMotorSpeed(leftPower);
-            drivetrain.setRightMotorSpeed(rightPower);
+            drivetrain.setMotorSpeed(leftMotor, leftPower);
+            drivetrain.setMotorSpeed(rightMotor, rightPower);
 
             // Display motor power on the Driver Station
             telemetry.addData("Left Power", leftPower);
             telemetry.addData("Right Power", rightPower);
-            telemetry.addData("Left Ticks", drivetrain.getLeftCurrentTicks());
-            telemetry.addData("Right Ticks", drivetrain.getRightCurrentTicks());
+            telemetry.addData("Left Ticks", drivetrain.getCurrentPosition(leftMotor));
+            telemetry.addData("Right Ticks", drivetrain.getCurrentPosition(rightMotor));
             telemetry.update();
 
         }
