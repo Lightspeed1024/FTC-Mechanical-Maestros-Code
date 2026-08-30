@@ -15,7 +15,7 @@ public class BasicTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException{
 
         // Declare motors
-        drivetrain.init(hardwareMap);
+        drivetrain.init(this, hardwareMap);
 
         // Wait for the driver to press PLAY
         waitForStart();
