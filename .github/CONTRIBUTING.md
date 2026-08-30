@@ -67,7 +67,7 @@ This safely copies your accidental commit over to your new feature branch.
 
 This completely erases the accidental commit from your local `main` branch, making it perfectly clean again.
 
-**Step 4: Push to Github**
+**Step 4: Push to GitHub **
 
 1. Click on **Current Branch** one last time and switch back to your new feature branch (`feature/my-changes`).
 2. Click the **Push origin** button at the top of the screen.
@@ -76,3 +76,5 @@ This completely erases the accidental commit from your local `main` branch, maki
 ---
 
 Thank you for following these rules and maintaining a clean, organized repository!
+
+Note: If Android Studio does not connect to the control hub wirelessly, first make sure you are connected to the control hub wifi. Then, if it still doesn't work, go to the terminal and run ```& "$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe" connect 192.168.43.1:5555```
