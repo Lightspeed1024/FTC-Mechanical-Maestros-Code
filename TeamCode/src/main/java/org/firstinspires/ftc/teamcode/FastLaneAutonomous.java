@@ -25,6 +25,7 @@ public class FastLaneAutonomous extends LinearOpMode {
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
     static final double     WHEEL_DIAMETER_INCHES   = 3.54331;  // traction wheels (90mm)
     static final double     TRACK_WIDTH_INCHES      = 16.0;     // Customize to our robot
+    static final double     TURN_CIRCUMFERENCE      = Math.PI * TRACK_WIDTH_INCHES;
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * Math.PI);
     static final double     DRIVE_SPEED             = 1.0;      // Full speed ahead!
@@ -50,12 +51,13 @@ public class FastLaneAutonomous extends LinearOpMode {
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
-        sleep(1000);  // pause to display final telemetry message.
+        sleep(3000);  // pause to display final telemetry message.
     }
 
     /**
      *  Method to perform a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.
+     *  If turning is desired, use the turnDegrees method instead.
      *  Move will stop if any of three conditions occur:
      *  1) Move gets to the desired position
      *  2) Move runs out of time
@@ -117,5 +119,17 @@ public class FastLaneAutonomous extends LinearOpMode {
 
             sleep(250);   // optional pause after each move.
         }
+    }
+
+    /**
+     * Method to perform a relative turn using degrees.
+     * It converts degrees to the appropriate turn and calls encoderDrive using those measurements.
+     * @param degrees   The degrees to turn the robot.
+     * @param speed     The turning speed.
+     * @param timeoutS  The amount of time after to stop movement even if action is unfinished.
+     */
+    public void turnDegrees(double degrees, double speed, double timeoutS) {
+        double inches = (degrees / 360.0) * TURN_CIRCUMFERENCE;
+        encoderDrive(speed, inches, -inches, timeoutS);
     }
 }
