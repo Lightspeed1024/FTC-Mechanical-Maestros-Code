@@ -21,14 +21,15 @@ public class FastLaneAutonomous extends LinearOpMode {
     // For example, use a value of 2.0 for a 12-tooth spur gear driving a 24-tooth spur gear.
     // This is gearing DOWN for less speed and more torque.
     // For gearing UP, use a gear ratio less than 1.0. Note this will affect the direction of wheel rotation.
-    static final double     COUNTS_PER_MOTOR_REV    = 1440 ;    // eg: TETRIX Motor Encoder
+    static final double     COUNTS_PER_MOTOR_REV    = 560 ;     // Rev HD Hex motor with 20:1 planetary gearbox
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // No External Gearing.
-    static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;     // For figuring circumference
+    static final double     WHEEL_DIAMETER_INCHES   = 3.54331;  // traction wheels (90mm)
     static final double     TRACK_WIDTH_INCHES      = 16.0;     // Customize to our robot
     static final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * 3.1415);
-    static final double     DRIVE_SPEED             = 0.6;
-    static final double     TURN_SPEED              = 0.5;
+            (WHEEL_DIAMETER_INCHES * Math.PI);
+    static final double     DRIVE_SPEED             = 1.0;      // Full speed ahead!
+    static final double     TURN_SPEED              = 0.7;      // Slightly slower turning for precision but faster than TeleOp
+
     @Override
     public void runOpMode() throws InterruptedException {
         drivetrain.init(hardwareMap);
@@ -52,13 +53,18 @@ public class FastLaneAutonomous extends LinearOpMode {
         sleep(1000);  // pause to display final telemetry message.
     }
 
-    /*
+    /**
      *  Method to perform a relative move, based on encoder counts.
      *  Encoders are not reset as the move is based on the current position.
      *  Move will stop if any of three conditions occur:
      *  1) Move gets to the desired position
      *  2) Move runs out of time
      *  3) Driver stops the OpMode running.
+     * @param speed       The speed to drive at.
+     * @param leftInches  The distance for the left side to drive. Set negative for reverse movement.
+     * @param rightInches The distance for the right side to drive. Set negative for reverse movement.
+     * @param timeoutS    The time to complete the action.
+     *                    If the action has not been done when the timer runs out, movement stops.
      */
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
