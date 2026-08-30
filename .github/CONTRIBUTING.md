@@ -9,17 +9,22 @@ Welcome to the team! To maintain an organized code workspace and a clean Git his
 ALL of the team code should go in this folder:
 
 TeamCode &rarr; src &rarr; main &rarr; java &rarr; org.firstinspires.ftc.teamcode
-Any code relating to the physical hardware connected to the robot should go in the mechanisms package inside that folder. OpMode code will then use objects from that folder.
+
+
+<u>Any code relating to the physical hardware connected to the robot should go in the **mechanisms** package inside that folder.</u> OpMode code will then use objects from that folder.
 
 NEVER edit any of the source files from the FtcRobotController folder or anything outside the TeamCode folder, as those are written by FIRST and editing them will cause the project to break.
 
 ## 2. Do not update the Gradle or anything else related to the SDK
+
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
 
 ## 3. Do not sync fork
+
 Do NOT press the "sync fork" button on the home web page, merge from the upstream in the terminal, or pull any changes from the upstream repository. Since we are changing the files from the default template, doing so will revert our files back to the original, removing progress.
 
 ## 4. Do not update Gradle or anything else related to the SDK
+
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
 
 ## 5. Branching
@@ -42,6 +47,7 @@ Once your work is finished on your side branch, you must open a Pull Request (PR
 * **Required Approvals:** You must receive approval from at least one member of the team before merging your pull request.
 
 ## 7. Do not update Gradle or anything else related to the SDK
+
 If Android Studio or VSCode asks you to update Gradle, migrate to Gradle Daemon, etc. DO NOT DO IT. FTC robot code relies on a specific version and Java environment and changing it will cause the project to break.
 
 ## 8. If you accidentally committed to main:
