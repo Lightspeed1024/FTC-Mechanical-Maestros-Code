@@ -23,4 +23,12 @@ public class BasicDrivetrain {
     public void setRightMotorSpeed(double speed) {
         rightMotor.setPower(speed);
     }
+
+    public double getRightCurrentTicks() {
+        return rightMotor.getCurrentPosition();
+    }
+
+    public double getLeftCurrentTicks() {
+        return leftMotor.getCurrentPosition();
+    }
 }

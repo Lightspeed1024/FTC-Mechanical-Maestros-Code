@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
 public class BasicTeleOp extends LinearOpMode {
 
     @Override
-    public void runOpMode() {
+    public void runOpMode() throws InterruptedException{
 
         // Declare motors
         BasicDrivetrain drivetrain = new BasicDrivetrain();
@@ -54,7 +54,10 @@ public class BasicTeleOp extends LinearOpMode {
             // Display motor power on the Driver Station
             telemetry.addData("Left Power", leftPower);
             telemetry.addData("Right Power", rightPower);
+            telemetry.addData("Left Ticks", drivetrain.getLeftCurrentTicks());
+            telemetry.addData("Right Ticks", drivetrain.getRightCurrentTicks());
             telemetry.update();
+
         }
     }
 }
