@@ -27,7 +27,7 @@ public class BasicTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Left stick controls forward and backward
-            double drive = -gamepad1.left_stick_y;
+            double drive = -gamepad1.left_stick_y * (0.75 + gamepad1.left_trigger*0.25 - gamepad1.right_trigger*0.5);
 
             // Right stick controls turning
             double turn = -gamepad1.right_stick_x * 0.5;
