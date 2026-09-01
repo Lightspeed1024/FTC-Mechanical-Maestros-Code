@@ -26,8 +26,8 @@ public class DuoStarterIntake extends OpMode {
         intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addLine("Duo Starter Intake Ready");
-        telemetry.addLine("A = Intake");
-        telemetry.addLine("B = Outtake");
+        telemetry.addLine("Right Bumper  = Intake");
+        telemetry.addLine("Left Bumper = Outtake");
         telemetry.update();
     }
 
@@ -35,7 +35,7 @@ public class DuoStarterIntake extends OpMode {
     public void loop() {
 
         // A button = Intake
-        if (gamepad1.a && !gamepad1.b) {
+        if (gamepad1.right_bumper && !gamepad1.left_bumper) {
 
             intake1.setPower(1.0);
             intake2.setPower(1.0);
@@ -43,7 +43,7 @@ public class DuoStarterIntake extends OpMode {
             telemetry.addLine("INTAKING");
 
             // B button = Outtake
-        } else if (gamepad1.b && !gamepad1.a) {
+        } else if (gamepad1.left_bumper && !gamepad1.right_bumper) {
 
             intake1.setPower(-1.0);
             intake2.setPower(-1.0);
