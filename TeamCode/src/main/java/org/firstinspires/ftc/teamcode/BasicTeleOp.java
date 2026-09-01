@@ -10,6 +10,7 @@ public class BasicTeleOp extends LinearOpMode {
     BasicDrivetrain drivetrain = new BasicDrivetrain();
     private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
     private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
+    private boolean isEndgame = false;
 
     @Override
     public void runOpMode() throws InterruptedException{
@@ -50,6 +51,12 @@ public class BasicTeleOp extends LinearOpMode {
             // Set motor powers
             drivetrain.setMotorSpeed(leftMotor, leftPower);
             drivetrain.setMotorSpeed(rightMotor, rightPower);
+
+            // vibrate controller after 90 seconds
+            if (getRuntime() >= 90 && !isEndgame) {
+                gamepad1.rumble(500);
+                isEndgame = true;
+            }
 
             // Display motor power on the Driver Station
             telemetry.addData("Left Power", leftPower);

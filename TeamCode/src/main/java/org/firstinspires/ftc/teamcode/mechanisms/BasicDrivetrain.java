@@ -28,12 +28,15 @@ public class BasicDrivetrain {
 
     public void init(LinearOpMode opMode, HardwareMap hwMap) {
         this.opMode = opMode;
+
         leftMotor = hwMap.get(DcMotor.class, "leftMotor");
         rightMotor = hwMap.get(DcMotor.class, "rightMotor");
+
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
         leftMotor.setDirection(DcMotor.Direction.FORWARD);
     }
