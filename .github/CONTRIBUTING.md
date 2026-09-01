@@ -73,11 +73,11 @@ This safely copies your accidental commit over to your new feature branch.
 
 This completely erases the accidental commit from your local `main` branch, making it perfectly clean again.
 
-**Step 4: Push to GitHub **
+**Step 4: Push to GitHub**
 
 1. Click on **Current Branch** one last time and switch back to your new feature branch (`feature/my-changes`).
-2. Click the **Push origin** button at the top of the screen.
-3. Go to GitHub.com and open your Pull Request!
+2. Commit your changes again.
+3. Click the **Push origin** button at the top of the screen.
 
 ---
 
