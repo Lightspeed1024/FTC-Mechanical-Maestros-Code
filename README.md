@@ -1,4 +1,4 @@
-### FTC Mechanical Masters Code
+### FTC Organized Chaos Code
 
 This is the repository for the FTC Organized Chaos team robot code.
 
