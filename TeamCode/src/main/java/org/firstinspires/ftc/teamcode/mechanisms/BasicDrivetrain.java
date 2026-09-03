@@ -118,8 +118,8 @@ public class BasicDrivetrain {
 
     public void setMotorSpeed(Motor motor, double speed) {
         switch (motor) {
-            case LEFT_MOTOR: leftMotor.setPower(speed);
-            case RIGHT_MOTOR: rightMotor.setPower(speed);
+            case LEFT_MOTOR: leftMotor.setPower(speed); break;
+            case RIGHT_MOTOR: rightMotor.setPower(speed); break;
         }
     }
 
@@ -133,22 +133,22 @@ public class BasicDrivetrain {
 
     public void setTargetPosition(Motor motor, int target) {
         switch (motor) {
-            case LEFT_MOTOR: leftMotor.setTargetPosition(target);
-            case RIGHT_MOTOR: rightMotor.setTargetPosition(target);
+            case LEFT_MOTOR: leftMotor.setTargetPosition(target); break;
+            case RIGHT_MOTOR: rightMotor.setTargetPosition(target); break;
         }
     }
 
     public void setPower(Motor motor, double power) {
         switch (motor) {
-            case LEFT_MOTOR: leftMotor.setPower(power);
-            case RIGHT_MOTOR: rightMotor.setPower(power);
+            case LEFT_MOTOR: leftMotor.setPower(power); break;
+            case RIGHT_MOTOR: rightMotor.setPower(power); break;
         }
     }
 
     public void setMode(Motor motor, DcMotor.RunMode mode) {
         switch (motor) {
-            case LEFT_MOTOR: leftMotor.setMode(mode);
-            case RIGHT_MOTOR: rightMotor.setMode(mode);
+            case LEFT_MOTOR: leftMotor.setMode(mode); break;
+            case RIGHT_MOTOR: rightMotor.setMode(mode); break;
         }
     }
 
