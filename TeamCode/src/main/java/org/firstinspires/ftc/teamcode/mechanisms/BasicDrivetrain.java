@@ -13,6 +13,9 @@ public class BasicDrivetrain {
 
     private final ElapsedTime runtime = new ElapsedTime();
 
+    private double leftPower = 0.0;
+    private double rightPower = 0.0;
+
     public enum Motor {
         LEFT_MOTOR,
         RIGHT_MOTOR
@@ -22,6 +25,9 @@ public class BasicDrivetrain {
     private static final double DRIVE_GEAR_REDUCTION = 1.0;
     private static final double WHEEL_DIAMETER_INCHES = 3.54331;
     private static final double TRACK_WIDTH_INCHES = 16.0;
+
+    private static final double SPEED_UP_RATE = 2.75;
+    private static final double SLOW_DOWN_RATE = 5.50;
 
     private static final double TURN_CIRCUMFERENCE = Math.PI * TRACK_WIDTH_INCHES;
 
@@ -46,11 +52,29 @@ public class BasicDrivetrain {
     }
 
     public void setDrivePower(double leftPower, double rightPower) {
-        leftPower = Range.clip(leftPower, -1.0, 1.0);
-        rightPower = Range.clip(rightPower, -1.0, 1.0);
+        this.leftPower = Range.clip(leftPower, -1.0, 1.0);
+        this.rightPower = Range.clip(rightPower, -1.0, 1.0);
 
-        leftMotor.setPower(leftPower);
-        rightMotor.setPower(rightPower);
+        leftMotor.setPower(this.leftPower);
+        rightMotor.setPower(this.rightPower);
+    }
+
+    /**
+     * Gradually changes both motor powers toward the requested powers.
+     *
+     * @param wantedLeftPower requested left motor power
+     * @param wantedRightPower requested right motor power
+     * @param loopTime seconds since the previous control loop
+     */
+    public void setSmoothDrivePower(
+            double wantedLeftPower,
+            double wantedRightPower,
+            double loopTime
+    ) {
+        double newLeftPower = smoothPower(leftPower, wantedLeftPower, loopTime);
+        double newRightPower = smoothPower(rightPower, wantedRightPower, loopTime);
+
+        setDrivePower(newLeftPower, newRightPower);
     }
 
     /**
@@ -146,6 +170,14 @@ public class BasicDrivetrain {
         return rightMotor.getCurrentPosition();
     }
 
+    public double getLeftPower() {
+        return leftPower;
+    }
+
+    public double getRightPower() {
+        return rightPower;
+    }
+
     public boolean isDriving() {
         return leftMotor.isBusy() || rightMotor.isBusy();
     }
@@ -161,6 +193,9 @@ public class BasicDrivetrain {
     }
 
     public void stop() {
+        leftPower = 0.0;
+        rightPower = 0.0;
+
         if (leftMotor != null) {
             leftMotor.setPower(0.0);
         }
@@ -236,6 +271,35 @@ public class BasicDrivetrain {
             default:
                 return false;
         }
+    }
+
+    /**
+     * Gradually changes motor power instead of changing it instantly.
+     */
+    private double smoothPower(
+            double currentPower,
+            double wantedPower,
+            double loopTime
+    ) {
+        boolean changingDirection = currentPower != 0.0
+                && wantedPower != 0.0
+                && Math.signum(currentPower) != Math.signum(wantedPower);
+
+        boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
+
+        double rate = changingDirection || slowingDown
+                ? SLOW_DOWN_RATE
+                : SPEED_UP_RATE;
+
+        return moveToward(currentPower, wantedPower, rate * loopTime);
+    }
+
+    /**
+     * Moves a value toward a target by no more than maximumChange.
+     */
+    private double moveToward(double current, double target, double maximumChange) {
+        double change = Range.clip(target - current, -maximumChange, maximumChange);
+        return current + change;
     }
 
     private int inchesToTicks(double inches) {
