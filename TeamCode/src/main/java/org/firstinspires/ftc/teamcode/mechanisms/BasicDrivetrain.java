@@ -54,7 +54,12 @@ public class BasicTeleOp extends LinearOpMode {
                 double speedLimit = slowMode ? slowSpeed : normalSpeed;
 
                 // Turning becomes less sensitive while driving quickly.
-                double turnLimit = mix(turnSpeed, fastTurnSpeed, Math.abs(drive));
+                double turnLimit = interpolate(
+                        turnSpeed,
+                        fastTurnSpeed,
+                        Math.abs(drive)
+                );
+
                 turn *= turnLimit;
 
                 double wantedLeftPower = drive + turn;
@@ -104,6 +109,10 @@ public class BasicTeleOp extends LinearOpMode {
         }
     }
 
+    /**
+     * Removes small joystick values caused by stick drift and rescales
+     * the remaining joystick range so it can still reach full power.
+     */
     private double fixJoystick(double stickValue) {
         double amount = Math.abs(stickValue);
 
@@ -116,12 +125,12 @@ public class BasicTeleOp extends LinearOpMode {
     }
 
     /**
-     * Returns a value between start and end based on amount.
+     * Calculates a value between a starting value and an ending value.
      *
-     * An amount of 0 returns start, 1 returns end, and 0.5 returns
-     * the value halfway between them.
+     * An amount of 0 returns start, an amount of 1 returns end, and an
+     * amount of 0.5 returns the value halfway between them.
      */
-    private double mix(double start, double end, double amount) {
+    private double interpolate(double start, double end, double amount) {
         amount = Range.clip(amount, 0.0, 1.0);
         return start + (end - start) * amount;
     }
