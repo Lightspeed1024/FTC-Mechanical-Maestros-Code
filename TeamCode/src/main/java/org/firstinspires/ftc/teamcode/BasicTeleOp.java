@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
+import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain.Motor;
 
 @TeleOp(name = "Basic TeleOp", group = "Drive")
 public class BasicTeleOp extends LinearOpMode {
@@ -13,12 +14,12 @@ public class BasicTeleOp extends LinearOpMode {
     private final ElapsedTime loopTimer = new ElapsedTime();
 
     private static final double NORMAL_SPEED = 0.75;
-    private static final double FAST_SPEED = 1.0;
+    private static final double FAST_SPEED = 1.00;
     private static final double SLOW_SPEED = 0.35;
     private static final double DEAD_ZONE = 0.06;
 
     private static final double TURN_SPEED = 0.80;
-    private static final double FAST_TURN_SPEED = 0.55;
+    private static final double MOVING_TURN_SPEED = 0.55;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -48,8 +49,6 @@ public class BasicTeleOp extends LinearOpMode {
 
                 // The Y value is reversed in FTC gamepad mapping.
                 double drive = fixJoystick(-gamepad1.left_stick_y);
-
-                // Add a minus sign if the robot turns in the wrong direction.
                 double turn = fixJoystick(gamepad1.right_stick_x);
 
                 // Cubing gives more control at low speeds without reducing maximum speed.
@@ -60,24 +59,14 @@ public class BasicTeleOp extends LinearOpMode {
                 double boostAmount = Range.clip(gamepad1.right_trigger, 0.0, 1.0);
 
                 // The trigger gradually increases the speed limit from 75% to 100%.
-                double speedLimit = interpolate(
-                        NORMAL_SPEED,
-                        FAST_SPEED,
-                        boostAmount
-                );
+                double speedLimit = interpolate(NORMAL_SPEED, FAST_SPEED, boostAmount);
 
-                // Slow mode overrides the right-trigger boost.
                 if (slowMode) {
                     speedLimit = SLOW_SPEED;
                 }
 
                 // Reduce turning sensitivity while driving quickly.
-                double turnLimit = interpolate(
-                        TURN_SPEED,
-                        FAST_TURN_SPEED,
-                        Math.abs(drive)
-                );
-
+                double turnLimit = interpolate(TURN_SPEED, MOVING_TURN_SPEED, Math.abs(drive));
                 turn *= turnLimit;
 
                 double wantedLeftPower = drive + turn;
@@ -97,11 +86,7 @@ public class BasicTeleOp extends LinearOpMode {
                 wantedLeftPower *= speedLimit;
                 wantedRightPower *= speedLimit;
 
-                drivetrain.setSmoothDrivePower(
-                        wantedLeftPower,
-                        wantedRightPower,
-                        loopTime
-                );
+                drivetrain.setSmoothDrivePower(wantedLeftPower, wantedRightPower, loopTime);
 
                 String driveMode;
 
@@ -120,15 +105,15 @@ public class BasicTeleOp extends LinearOpMode {
                 telemetry.addData(
                         "Motor Power",
                         "Left: %.2f  Right: %.2f",
-                        drivetrain.getPower(BasicDrivetrain.Motor.LEFT_MOTOR),
-                        drivetrain.getPower(BasicDrivetrain.Motor.RIGHT_MOTOR)
+                        drivetrain.getPower(Motor.LEFT_MOTOR),
+                        drivetrain.getPower(Motor.RIGHT_MOTOR)
                 );
 
                 telemetry.addData(
                         "Encoders",
                         "Left: %d  Right: %d",
-                        drivetrain.getCurrentPosition(BasicDrivetrain.Motor.LEFT_MOTOR),
-                        drivetrain.getCurrentPosition(BasicDrivetrain.Motor.RIGHT_MOTOR)
+                        drivetrain.getCurrentPosition(Motor.LEFT_MOTOR),
+                        drivetrain.getCurrentPosition(Motor.RIGHT_MOTOR)
                 );
 
                 telemetry.update();
@@ -140,7 +125,7 @@ public class BasicTeleOp extends LinearOpMode {
     }
 
     /**
-     * Normalizes the joystick reading to account for the center dead zone.
+     * Removes the joystick dead zone while preserving its full output range.
      */
     private double fixJoystick(double stickValue) {
         double amount = Math.abs(stickValue);
