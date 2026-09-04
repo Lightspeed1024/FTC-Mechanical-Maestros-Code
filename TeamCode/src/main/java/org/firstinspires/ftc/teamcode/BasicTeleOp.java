@@ -13,13 +13,13 @@ public class BasicTeleOp extends LinearOpMode {
     private final ElapsedTime loopTimer = new ElapsedTime();
 
     private static final double NORMAL_SPEED = 0.65;
-    private static final double FAST_SPEED = 0.90;
+    private static final double FAST_SPEED = 1.0;
     private static final double SLOW_SPEED = 0.35;
     private static final double DEAD_ZONE = 0.06;
     private static final double TURN_SPEED = 0.80;
-    private static final double FAST_TURN_SPEED = 0.55;
-    private static final double SPEED_UP_RATE = 2.75;
-    private static final double SLOW_DOWN_RATE = 5.50;
+    private static final double FAST_TURN_SPEED = 0.55; // the turning speed when driving at full speed
+    private static final double MAXIMUM_SPEED_UP_RATE = 2.75;
+    private static final double MAXIMUM_SLOW_DOWN_RATE = 5.50;
 
     private double leftPower = 0.0;
     private double rightPower = 0.0;
@@ -144,18 +144,17 @@ public class BasicTeleOp extends LinearOpMode {
                         && Math.signum(currentPower) != Math.signum(wantedPower);
         /*
          * When reversing direction, first bring the motor to zero.
-         * This prevents the power from crossing directly from forward
-         * into reverse during one loop.
+         * This prevents the power from crossing directly from forward into reverse during one loop.
          */
         if (changingDirection) {
-            return moveToward(currentPower, 0.0, SLOW_DOWN_RATE * loopTime);
+            return moveToward(currentPower, 0.0, MAXIMUM_SLOW_DOWN_RATE * loopTime);
         }
 
         boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
 
-        double rate = slowingDown ? SLOW_DOWN_RATE : SPEED_UP_RATE;
+        double maxRate = slowingDown ? MAXIMUM_SLOW_DOWN_RATE : MAXIMUM_SPEED_UP_RATE;
 
-        return moveToward(currentPower, wantedPower, rate * loopTime);
+        return moveToward(currentPower, wantedPower, maxRate * loopTime);
     }
 
     private double moveToward(double currentValue, double targetValue, double maximumChange) {
