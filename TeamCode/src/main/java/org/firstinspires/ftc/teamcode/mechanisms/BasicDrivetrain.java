@@ -19,17 +19,16 @@ public class BasicDrivetrain {
         RIGHT_MOTOR
     }
 
-    private static final double countsPerMotorRev = 560.0;
-    private static final double driveGearReduction = 1.0;
-    private static final double wheelDiameterInches = 3.54331;
-    private static final double trackWidthInches = 16.0;
+ private static final double COUNTS_PER_MOTOR_REV = 560.0;
+ private static final double DRIVE_GEAR_REDUCTION = 1.0;
+ private static final double WHEEL_DIAMETER_INCHES = 3.54331;
+ private static final double TRACK_WIDTH_INCHES = 16.0;
 
-    private static final double turnCircumference =
-            Math.PI * trackWidthInches;
+ private static final double TURN_CIRCUMFERENCE = Math.PI * TRACK_WIDTH_INCHES;
 
-    private static final double countsPerInch =
-            (countsPerMotorRev * driveGearReduction)
-                    / (wheelDiameterInches * Math.PI);
+ private static final double COUNTS_PER_INCH =
+        (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
+                / (WHEEL_DIAMETER_INCHES * Math.PI);
 
     /**
      * Finds and configures the drivetrain motors.
