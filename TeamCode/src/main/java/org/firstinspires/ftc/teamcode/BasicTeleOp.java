@@ -4,10 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
+import org.firstinspires.ftc.teamcode.mechanisms.BasicIntake;
 
 @TeleOp
 public class BasicTeleOp extends LinearOpMode {
     BasicDrivetrain drivetrain = new BasicDrivetrain();
+    BasicIntake intake = new BasicIntake();
     private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
     private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
 
@@ -51,13 +53,23 @@ public class BasicTeleOp extends LinearOpMode {
             drivetrain.setMotorSpeed(leftMotor, leftPower);
             drivetrain.setMotorSpeed(rightMotor, rightPower);
 
+            if (gamepad1.right_bumper && !gamepad1.left_bumper) {
+                intake.spinIntake(1.0);
+            }
+            else if (gamepad1.left_bumper && !gamepad1.right_bumper) {
+                intake.spinIntake(-1.0);
+            }
+            else {
+                intake.spinIntake(0.0);
+            }
+
             // Display motor power on the Driver Station
             telemetry.addData("Left Power", leftPower);
             telemetry.addData("Right Power", rightPower);
+            telemetry.addData("Intake Speed", intake.getSpeed());
             telemetry.addData("Left Ticks", drivetrain.getCurrentPosition(leftMotor));
             telemetry.addData("Right Ticks", drivetrain.getCurrentPosition(rightMotor));
             telemetry.update();
-
         }
     }
 }
