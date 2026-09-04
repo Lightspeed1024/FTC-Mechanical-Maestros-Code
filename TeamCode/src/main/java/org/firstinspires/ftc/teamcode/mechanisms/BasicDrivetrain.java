@@ -7,17 +7,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 public class BasicDrivetrain {
+    public enum Motor {
+        LEFT_MOTOR,
+        RIGHT_MOTOR
+    }
+
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private LinearOpMode opMode;
     private final ElapsedTime runtime = new ElapsedTime();
     private double leftPower = 0.0;
     private double rightPower = 0.0;
-
-    public enum Motor {
-        LEFT_MOTOR,
-        RIGHT_MOTOR
-    }
 
     private static final double COUNTS_PER_MOTOR_REV = 560.0;
     private static final double DRIVE_GEAR_REDUCTION = 1.0;
@@ -54,11 +54,8 @@ public class BasicDrivetrain {
     }
 
     public void setDrivePower(double leftPower, double rightPower) {
-        this.leftPower = Range.clip(leftPower, -1.0, 1.0);
-        this.rightPower = Range.clip(rightPower, -1.0, 1.0);
-
-        leftMotor.setPower(this.leftPower);
-        rightMotor.setPower(this.rightPower);
+        setPower(Motor.LEFT_MOTOR, leftPower);
+        setPower(Motor.RIGHT_MOTOR, rightPower);
     }
 
     /**
@@ -119,25 +116,24 @@ public class BasicDrivetrain {
             return;
         }
 
-        int newLeftTarget = leftMotor.getCurrentPosition() + inchesToTicks(leftInches);
-        int newRightTarget = rightMotor.getCurrentPosition() + inchesToTicks(rightInches);
+        int leftTarget = getCurrentPosition(Motor.LEFT_MOTOR) + inchesToTicks(leftInches);
+        int rightTarget = getCurrentPosition(Motor.RIGHT_MOTOR) + inchesToTicks(rightInches);
 
-        leftMotor.setTargetPosition(newLeftTarget);
-        rightMotor.setTargetPosition(newRightTarget);
+        setTargetPosition(Motor.LEFT_MOTOR, leftTarget);
+        setTargetPosition(Motor.RIGHT_MOTOR, rightTarget);
 
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(Motor.LEFT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
+        setMode(Motor.RIGHT_MOTOR, DcMotor.RunMode.RUN_TO_POSITION);
 
         runtime.reset();
 
         try {
-            leftMotor.setPower(drivePower);
-            rightMotor.setPower(drivePower);
+            setDrivePower(drivePower, drivePower);
 
             // Wait until both motors finish or the timeout expires.
             while (opMode.opModeIsActive()
                     && runtime.seconds() < timeoutSeconds
-                    && (leftMotor.isBusy() || rightMotor.isBusy())) {
+                    && (isBusy(Motor.LEFT_MOTOR) || isBusy(Motor.RIGHT_MOTOR))) {
 
                 opMode.telemetry.addData("Target", "Left: %d  Right: %d", newLeftTarget, newRightTarget);
                 opMode.telemetry.addData("Position", "Left: %d  Right: %d", leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition());
@@ -148,8 +144,8 @@ public class BasicDrivetrain {
         }
         finally {
             stop();
-            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            setMode(Motor.LEFT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
+            setMode(Motor.RIGHT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
@@ -169,18 +165,26 @@ public class BasicDrivetrain {
         }
     }
 
+    public double getLeftPower() {
+        return leftPower;
+    }
+
+    public double getRightPower() {
+        return rightPower;
+    }
+
     public boolean isDriving() {
-        return leftMotor.isBusy() || rightMotor.isBusy();
+        return isBusy(Motor.LEFT_MOTOR) || isBusy(Motor.RIGHT_MOTOR);
     }
 
     public void resetEncoders() {
         stop();
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setMode(Motor.LEFT_MOTOR, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        setMode(Motor.RIGHT_MOTOR, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(Motor.LEFT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
+        setMode(Motor.RIGHT_MOTOR, DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     /**
@@ -207,32 +211,67 @@ public class BasicDrivetrain {
     }
 
     public void setTargetPosition(Motor motor, int target) {
-        switch (motor) {
-            case LEFT_MOTOR: leftMotor.setTargetPosition(target); break;
-            case RIGHT_MOTOR: rightMotor.setTargetPosition(target); break;
-        }
+        getMotor(motor).setTargetPosition(target);
     }
 
     public void setPower(Motor motor, double power) {
-        power = Range.clip(power, -1.0, 1.0);
+        double clippedPower = Range.clip(power, -1.0, 1.0);
         switch (motor) {
-            case LEFT_MOTOR: leftMotor.setPower(power); break;
-            case RIGHT_MOTOR: rightMotor.setPower(power); break;
+            case LEFT_MOTOR: leftPower = clippedPower; break;
+            case RIGHT_MOTOR: rightPower = clippedPower; break;
         }
+
+        getMotor(motor).setPower(clippedPower);
     }
 
     public void setMode(Motor motor, DcMotor.RunMode mode) {
-        switch (motor) {
-            case LEFT_MOTOR: leftMotor.setMode(mode); break;
-            case RIGHT_MOTOR: rightMotor.setMode(mode); break;
-        }
+        getMotor(motor).setMode(mode);
     }
 
     public boolean isBusy(Motor motor) {
+         return getMotor(motor).isBusy();
+
+    }
+
+    /**
+     * Gradually changes motor power instead of changing it instantly.
+     */
+    private double smoothPower(
+            double currentPower,
+            double wantedPower,
+            double loopTime
+    ) {
+        boolean changingDirection = currentPower != 0.0
+                && wantedPower != 0.0
+                && Math.signum(currentPower) != Math.signum(wantedPower);
+
+        boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
+
+        double rate = changingDirection || slowingDown
+                ? SLOW_DOWN_RATE
+                : SPEED_UP_RATE;
+
+        return moveToward(currentPower, wantedPower, rate * loopTime);
+    }
+
+    /**
+     * Moves a value toward a target by no more than maximumChange.
+     */
+    private double moveToward(double current, double target, double maximumChange) {
+        double change = Range.clip(target - current, -maximumChange, maximumChange);
+        return current + change;
+    }
+
+    private DcMotor getMotor(Motor motor) {
         switch (motor) {
-            case LEFT_MOTOR: return leftMotor.isBusy();
-            case RIGHT_MOTOR: return rightMotor.isBusy();
-            default: return false;
+            case LEFT_MOTOR:
+                return leftMotor;
+
+            case RIGHT_MOTOR:
+                return rightMotor;
+
+            default:
+                throw new IllegalArgumentException("Unknown drivetrain motor");
         }
     }
 
