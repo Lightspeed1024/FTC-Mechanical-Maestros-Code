@@ -12,7 +12,7 @@ public class BasicTeleOp extends LinearOpMode {
     private final BasicDrivetrain drivetrain = new BasicDrivetrain();
     private final ElapsedTime loopTimer = new ElapsedTime();
 
-    private static final double NORMAL_SPEED = 0.65;
+    private static final double NORMAL_SPEED = 0.75;
     private static final double FAST_SPEED = 1.0;
     private static final double SLOW_SPEED = 0.35;
     private static final double DEAD_ZONE = 0.06;
@@ -27,7 +27,8 @@ public class BasicTeleOp extends LinearOpMode {
         telemetry.addLine("Robot is ready");
         telemetry.addLine("Left stick: drive");
         telemetry.addLine("Right stick: turn");
-        telemetry.addLine("Right trigger: boost to 90%");
+        telemetry.addLine("Normal speed: 75%");
+        telemetry.addLine("Right trigger: boost to 100%");
         telemetry.addLine("Left bumper: 35% slow mode");
         telemetry.update();
 
@@ -58,7 +59,7 @@ public class BasicTeleOp extends LinearOpMode {
                 boolean slowMode = gamepad1.left_bumper;
                 double boostAmount = Range.clip(gamepad1.right_trigger, 0.0, 1.0);
 
-                // The trigger gradually changes the speed between normal and fast.
+                // The trigger gradually increases the speed limit from 75% to 100%.
                 double speedLimit = interpolate(
                         NORMAL_SPEED,
                         FAST_SPEED,
@@ -162,3 +163,4 @@ public class BasicTeleOp extends LinearOpMode {
         amount = Range.clip(amount, 0.0, 1.0);
         return start + (end - start) * amount;
     }
+}
