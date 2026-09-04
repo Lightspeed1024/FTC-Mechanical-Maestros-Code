@@ -9,6 +9,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain;
 
 @TeleOp(name = "Basic TeleOp", group = "Drive")
 public class BasicTeleOp extends LinearOpMode {
+    private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
+    private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
     private final BasicDrivetrain drivetrain = new BasicDrivetrain();
     private final ElapsedTime loopTimer = new ElapsedTime();
 
@@ -89,9 +91,7 @@ public class BasicTeleOp extends LinearOpMode {
                 wantedLeftPower *= speedLimit;
                 wantedRightPower *= speedLimit;
 
-                leftPower = smoothPower(leftPower, wantedLeftPower, loopTime);
-                rightPower = smoothPower(rightPower, wantedRightPower, loopTime);
-                drivetrain.setDrivePower(leftPower, rightPower);
+                drivetrain.setSmoothDrivePower(wantedLeftPower, wantedRightPower, loopTime);
 
                 String driveMode;
 
@@ -109,7 +109,9 @@ public class BasicTeleOp extends LinearOpMode {
                 telemetry.addData("Speed Limit", "%.0f%%", speedLimit * 100.0);
                 telemetry.addData("Right Trigger", "%.0f%%", boostAmount * 100.0);
                 telemetry.addData("Motor Power", "Left: %.2f  Right: %.2f", leftPower, rightPower);
-                telemetry.addData("Encoders", "Left: %d  Right: %d", drivetrain.getLeftTicks(), drivetrain.getRightTicks());
+                telemetry.addData("Encoders", "Left: %d  Right: %d",
+                        drivetrain.getCurrentPosition(leftMotor),
+                        drivetrain.getCurrentPosition(rightMotor));
                 telemetry.update();
                 idle();
             }
@@ -140,45 +142,6 @@ public class BasicTeleOp extends LinearOpMode {
          */
         double fixedAmount = (amount - DEAD_ZONE) / (1.0 - DEAD_ZONE);
         return Math.copySign(fixedAmount, stickValue);
-    }
-
-    /**
-     * Smoothly applies power to the motors by using the moveToward function internally but with smoothed values.
-     * It
-     * @param currentPower The power of the motor at the moment
-     * @param wantedPower The desired power of the motor
-     * @param loopTime The amount of time the last loop took
-     * @return The value of the moveToward function
-     */
-    private double smoothPower(double currentPower, double wantedPower, double loopTime) {
-        boolean changingDirection =
-                currentPower != 0.0
-                        && wantedPower != 0.0
-                        && Math.signum(currentPower) != Math.signum(wantedPower);
-        /*
-         * When reversing direction, first bring the motor to zero.
-         * This prevents the power from crossing directly from forward into reverse during one loop.
-         */
-        if (changingDirection) {
-            return moveToward(currentPower, 0.0, MAXIMUM_SLOW_DOWN_RATE * loopTime);
-        }
-
-        boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
-        double maxRate = slowingDown ? MAXIMUM_SLOW_DOWN_RATE : MAXIMUM_SPEED_UP_RATE;
-
-        return moveToward(currentPower, wantedPower, maxRate * loopTime);
-    }
-
-    /**
-     * Adds the targetValue to the currentValue, but clipped at maximumChange
-     * @param currentValue
-     * @param targetValue
-     * @param maximumChange
-     * @return The new value
-     */
-    private double moveToward(double currentValue, double targetValue, double maximumChange) {
-        double change = Range.clip(targetValue - currentValue, -maximumChange, maximumChange);
-        return currentValue + change;
     }
 
     /**

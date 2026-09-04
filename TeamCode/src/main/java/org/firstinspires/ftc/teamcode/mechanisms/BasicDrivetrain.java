@@ -10,9 +10,7 @@ public class BasicDrivetrain {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
     private LinearOpMode opMode;
-
     private final ElapsedTime runtime = new ElapsedTime();
-
     private double leftPower = 0.0;
     private double rightPower = 0.0;
 
@@ -25,16 +23,20 @@ public class BasicDrivetrain {
     private static final double DRIVE_GEAR_REDUCTION = 1.0;
     private static final double WHEEL_DIAMETER_INCHES = 3.54331;
     private static final double TRACK_WIDTH_INCHES = 16.0;
-
     private static final double SPEED_UP_RATE = 2.75;
     private static final double SLOW_DOWN_RATE = 5.50;
-
     private static final double TURN_CIRCUMFERENCE = Math.PI * TRACK_WIDTH_INCHES;
-
     private static final double COUNTS_PER_INCH =
             (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
                     / (WHEEL_DIAMETER_INCHES * Math.PI);
 
+    /**
+     * A replacement for the constructor of this class (making a custom method allows more functionalities than constructor).
+     * NEEDS TO BE CALLED EVERY TIME THIS CLASS IS INSTANTIATED.
+     * @param opMode Pass in "this" in the OpMode. It will give the OpMode object,
+     *               allowing this class to use things like telemetry
+     * @param hardwareMap Pass in hardwareMap in the OpMode, letting this class access the maps of the motors on the control hub.
+     */
     public void init(LinearOpMode opMode, HardwareMap hardwareMap) {
         this.opMode = opMode;
 
@@ -61,16 +63,11 @@ public class BasicDrivetrain {
 
     /**
      * Gradually changes both motor powers toward the requested powers.
-     *
-     * @param wantedLeftPower requested left motor power
-     * @param wantedRightPower requested right motor power
-     * @param loopTime seconds since the previous control loop
+     * @param wantedLeftPower The requested left motor power.
+     * @param wantedRightPower The requested right motor power.
+     * @param loopTime The seconds since the previous control loop.
      */
-    public void setSmoothDrivePower(
-            double wantedLeftPower,
-            double wantedRightPower,
-            double loopTime
-    ) {
+    public void setSmoothDrivePower(double wantedLeftPower, double wantedRightPower, double loopTime) {
         double newLeftPower = smoothPower(leftPower, wantedLeftPower, loopTime);
         double newRightPower = smoothPower(rightPower, wantedRightPower, loopTime);
 
@@ -78,15 +75,39 @@ public class BasicDrivetrain {
     }
 
     /**
+     * Gradually changes motor power instead of changing it instantly.
+     */
+    private double smoothPower(double currentPower, double wantedPower, double loopTime) {
+        boolean isChangingDirection = currentPower != 0.0
+                && wantedPower != 0.0
+                && Math.signum(currentPower) != Math.signum(wantedPower);
+
+        boolean isSlowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
+
+        double rate = isChangingDirection || isSlowingDown
+                ? SLOW_DOWN_RATE
+                : SPEED_UP_RATE;
+
+        return moveToward(currentPower, wantedPower, rate * loopTime);
+    }
+
+    /**
+     * Moves a value toward a target by no more than maximumChange.
+     */
+    private double moveToward(double current, double target, double maximumChange) {
+        double change = Range.clip(target - current, -maximumChange, maximumChange);
+        return current + change;
+    }
+
+    /**
      * Drives each side a specified distance using encoders.
      * Positive distances move forward; negative distances move backward.
+     * @param speed The speed at which to drive forward.
+     * @param leftInches The distance to move the left side of the robot.
+     * @param rightInches The distance to move the right side of the robot.
+     * @param timeoutSeconds The amount of time after which to abort the movement even if it is not done.
      */
-    public void driveInches(
-            double speed,
-            double leftInches,
-            double rightInches,
-            double timeoutSeconds
-    ) {
+    public void driveInches(double speed, double leftInches, double rightInches, double timeoutSeconds) {
         if (!opMode.opModeIsActive()) {
             return;
         }
@@ -118,64 +139,34 @@ public class BasicDrivetrain {
                     && runtime.seconds() < timeoutSeconds
                     && (leftMotor.isBusy() || rightMotor.isBusy())) {
 
-                opMode.telemetry.addData(
-                        "Target",
-                        "Left: %d  Right: %d",
-                        newLeftTarget,
-                        newRightTarget
-                );
-
-                opMode.telemetry.addData(
-                        "Position",
-                        "Left: %d  Right: %d",
-                        getLeftTicks(),
-                        getRightTicks()
-                );
-
-                opMode.telemetry.addData(
-                        "Time",
-                        "%.1f / %.1f seconds",
-                        runtime.seconds(),
-                        timeoutSeconds
-                );
-
+                opMode.telemetry.addData("Target", "Left: %d  Right: %d", newLeftTarget, newRightTarget);
+                opMode.telemetry.addData("Position", "Left: %d  Right: %d", leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition());
+                opMode.telemetry.addData("Time", "%.1f / %.1f seconds", runtime.seconds(), timeoutSeconds);
                 opMode.telemetry.update();
                 opMode.idle();
             }
-        } finally {
+        }
+        finally {
             stop();
-
             leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
-    public void driveStraight(double speed, double inches, double timeoutSeconds) {
-        driveInches(speed, inches, inches, timeoutSeconds);
-    }
-
     /**
-     * Turns using encoder distances. Positive degrees turn clockwise.
+     * Turns the robot. Positive degrees turn clockwise.
      */
     public void turnDegrees(double speed, double degrees, double timeoutSeconds) {
         double inches = (degrees / 360.0) * TURN_CIRCUMFERENCE;
         driveInches(speed, inches, -inches, timeoutSeconds);
     }
 
-    public int getLeftTicks() {
-        return leftMotor.getCurrentPosition();
-    }
-
-    public int getRightTicks() {
-        return rightMotor.getCurrentPosition();
-    }
-
-    public double getLeftPower() {
-        return leftPower;
-    }
-
-    public double getRightPower() {
-        return rightPower;
+    public double getPower(Motor motor) {
+        switch (motor) {
+            case RIGHT_MOTOR: return rightMotor.getPower();
+            case LEFT_MOTOR: return leftMotor.getPower();
+            default: return 0;
+        }
     }
 
     public boolean isDriving() {
@@ -192,17 +183,15 @@ public class BasicDrivetrain {
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
+    /**
+     * Stops all the motors and sets their speeds to 0
+     */
     public void stop() {
         leftPower = 0.0;
         rightPower = 0.0;
 
-        if (leftMotor != null) {
-            leftMotor.setPower(0.0);
-        }
-
-        if (rightMotor != null) {
-            rightMotor.setPower(0.0);
-        }
+        leftMotor.setPower(0.0);
+        rightMotor.setPower(0.0);
     }
 
     public void setMotorSpeed(Motor motor, double speed) {
@@ -211,95 +200,40 @@ public class BasicDrivetrain {
 
     public int getCurrentPosition(Motor motor) {
         switch (motor) {
-            case LEFT_MOTOR:
-                return leftMotor.getCurrentPosition();
-
-            case RIGHT_MOTOR:
-                return rightMotor.getCurrentPosition();
-
-            default:
-                return 0;
+            case LEFT_MOTOR: return leftMotor.getCurrentPosition();
+            case RIGHT_MOTOR: return rightMotor.getCurrentPosition();
+            default: return 0;
         }
     }
 
     public void setTargetPosition(Motor motor, int target) {
         switch (motor) {
-            case LEFT_MOTOR:
-                leftMotor.setTargetPosition(target);
-                break;
-
-            case RIGHT_MOTOR:
-                rightMotor.setTargetPosition(target);
-                break;
+            case LEFT_MOTOR: leftMotor.setTargetPosition(target); break;
+            case RIGHT_MOTOR: rightMotor.setTargetPosition(target); break;
         }
     }
 
     public void setPower(Motor motor, double power) {
         power = Range.clip(power, -1.0, 1.0);
-
         switch (motor) {
-            case LEFT_MOTOR:
-                leftMotor.setPower(power);
-                break;
-
-            case RIGHT_MOTOR:
-                rightMotor.setPower(power);
-                break;
+            case LEFT_MOTOR: leftMotor.setPower(power); break;
+            case RIGHT_MOTOR: rightMotor.setPower(power); break;
         }
     }
 
     public void setMode(Motor motor, DcMotor.RunMode mode) {
         switch (motor) {
-            case LEFT_MOTOR:
-                leftMotor.setMode(mode);
-                break;
-
-            case RIGHT_MOTOR:
-                rightMotor.setMode(mode);
-                break;
+            case LEFT_MOTOR: leftMotor.setMode(mode); break;
+            case RIGHT_MOTOR: rightMotor.setMode(mode); break;
         }
     }
 
     public boolean isBusy(Motor motor) {
         switch (motor) {
-            case LEFT_MOTOR:
-                return leftMotor.isBusy();
-
-            case RIGHT_MOTOR:
-                return rightMotor.isBusy();
-
-            default:
-                return false;
+            case LEFT_MOTOR: return leftMotor.isBusy();
+            case RIGHT_MOTOR: return rightMotor.isBusy();
+            default: return false;
         }
-    }
-
-    /**
-     * Gradually changes motor power instead of changing it instantly.
-     */
-    private double smoothPower(
-            double currentPower,
-            double wantedPower,
-            double loopTime
-    ) {
-        boolean changingDirection = currentPower != 0.0
-                && wantedPower != 0.0
-                && Math.signum(currentPower) != Math.signum(wantedPower);
-
-        boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
-
-        double rate = changingDirection || slowingDown
-                ? SLOW_DOWN_RATE
-                : SPEED_UP_RATE;
-
-        return moveToward(currentPower, wantedPower, rate * loopTime);
-    }
-
-    /**
-     * Moves a value toward a target by no more than maximumChange.
-     */
-    private double moveToward(double current, double target, double maximumChange) {
-        double change = Range.clip(target - current, -maximumChange, maximumChange);
-        return current + change;
     }
 
     private int inchesToTicks(double inches) {
