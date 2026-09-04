@@ -234,7 +234,7 @@ public class BasicDrivetrain {
     ) {
         double inches =
                 (degrees / 360.0)
-                        * turnCircumference;
+                        * TURN_CIRCUMFERENCE;
 
         driveInches(
                 speed,
@@ -400,7 +400,7 @@ public class BasicDrivetrain {
      */
     private int inchesToTicks(double inches) {
         return (int) Math.round(
-                inches * countsPerInch
+                inches * COUNTS_PER_INCH
         );
     }
 }
