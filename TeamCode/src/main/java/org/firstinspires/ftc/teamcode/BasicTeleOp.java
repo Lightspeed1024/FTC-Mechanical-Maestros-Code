@@ -123,6 +123,11 @@ public class BasicTeleOp extends LinearOpMode {
         }
     }
 
+    /**
+     * Normalizes the y-stick reading to account for the middle dead-zone
+     * @param stickValue The current y-axis reading
+     * @return The normalized value of the y-axis
+     */
     private double fixJoystick(double stickValue) {
         double amount = Math.abs(stickValue);
         if (amount <= DEAD_ZONE) {
@@ -137,6 +142,14 @@ public class BasicTeleOp extends LinearOpMode {
         return Math.copySign(fixedAmount, stickValue);
     }
 
+    /**
+     * Smoothly applies power to the motors by using the moveToward function internally but with smoothed values.
+     * It
+     * @param currentPower The power of the motor at the moment
+     * @param wantedPower The desired power of the motor
+     * @param loopTime The amount of time the last loop took
+     * @return The value of the moveToward function
+     */
     private double smoothPower(double currentPower, double wantedPower, double loopTime) {
         boolean changingDirection =
                 currentPower != 0.0
@@ -151,17 +164,30 @@ public class BasicTeleOp extends LinearOpMode {
         }
 
         boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
-
         double maxRate = slowingDown ? MAXIMUM_SLOW_DOWN_RATE : MAXIMUM_SPEED_UP_RATE;
 
         return moveToward(currentPower, wantedPower, maxRate * loopTime);
     }
 
+    /**
+     * Adds the targetValue to the currentValue, but clipped at maximumChange
+     * @param currentValue
+     * @param targetValue
+     * @param maximumChange
+     * @return The new value
+     */
     private double moveToward(double currentValue, double targetValue, double maximumChange) {
         double change = Range.clip(targetValue - currentValue, -maximumChange, maximumChange);
         return currentValue + change;
     }
 
+    /**
+     * A linear interpolation method that smoothly moves the start value towards the end value by a certain percent
+     * @param start The start value
+     * @param end The end value
+     * @param amount The percent to move from start to end, WRITTEN AS A DECIMAL
+     * @return The new value
+     */
     private double mix(double start, double end, double amount) {
         amount = Range.clip(amount, 0.0, 1.0);
         return start + (end - start) * amount;
