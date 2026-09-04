@@ -59,7 +59,11 @@ public class BasicTeleOp extends LinearOpMode {
                 double boostAmount = Range.clip(gamepad1.right_trigger, 0.0, 1.0);
 
                 // The trigger gradually changes the speed between normal and fast.
-                double speedLimit = mix(NORMAL_SPEED, FAST_SPEED, boostAmount);
+                double speedLimit = interpolate(
+                        NORMAL_SPEED,
+                        FAST_SPEED,
+                        boostAmount
+                );
 
                 // Slow mode overrides the right-trigger boost.
                 if (slowMode) {
@@ -67,7 +71,12 @@ public class BasicTeleOp extends LinearOpMode {
                 }
 
                 // Reduce turning sensitivity while driving quickly.
-                double turnLimit = mix(TURN_SPEED, FAST_TURN_SPEED, Math.abs(drive));
+                double turnLimit = interpolate(
+                        TURN_SPEED,
+                        FAST_TURN_SPEED,
+                        Math.abs(drive)
+                );
+
                 turn *= turnLimit;
 
                 double wantedLeftPower = drive + turn;
@@ -144,10 +153,12 @@ public class BasicTeleOp extends LinearOpMode {
     }
 
     /**
-     * Moves from the start value toward the end value by the given amount.
+     * Calculates a value between start and end.
+     *
+     * An amount of 0 returns start, 1 returns end, and 0.5 returns
+     * the value halfway between them.
      */
-    private double mix(double start, double end, double amount) {
+    private double interpolate(double start, double end, double amount) {
         amount = Range.clip(amount, 0.0, 1.0);
         return start + (end - start) * amount;
     }
-}
