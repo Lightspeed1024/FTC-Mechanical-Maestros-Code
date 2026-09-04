@@ -9,7 +9,6 @@ import com.qualcomm.robotcore.util.Range;
 public class BasicDrivetrain {
     private DcMotor leftMotor;
     private DcMotor rightMotor;
-
     private LinearOpMode opMode;
 
     private final ElapsedTime runtime = new ElapsedTime();
@@ -19,87 +18,44 @@ public class BasicDrivetrain {
         RIGHT_MOTOR
     }
 
- private static final double COUNTS_PER_MOTOR_REV = 560.0;
- private static final double DRIVE_GEAR_REDUCTION = 1.0;
- private static final double WHEEL_DIAMETER_INCHES = 3.54331;
- private static final double TRACK_WIDTH_INCHES = 16.0;
+    private static final double COUNTS_PER_MOTOR_REV = 560.0;
+    private static final double DRIVE_GEAR_REDUCTION = 1.0;
+    private static final double WHEEL_DIAMETER_INCHES = 3.54331;
+    private static final double TRACK_WIDTH_INCHES = 16.0;
 
- private static final double TURN_CIRCUMFERENCE = Math.PI * TRACK_WIDTH_INCHES;
+    private static final double TURN_CIRCUMFERENCE = Math.PI * TRACK_WIDTH_INCHES;
 
- private static final double COUNTS_PER_INCH =
-        (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
-                / (WHEEL_DIAMETER_INCHES * Math.PI);
+    private static final double COUNTS_PER_INCH =
+            (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION)
+                    / (WHEEL_DIAMETER_INCHES * Math.PI);
 
-    /**
-     * Finds and configures the drivetrain motors.
-     */
-    public void init(
-            LinearOpMode opMode,
-            HardwareMap hardwareMap
-    ) {
+    public void init(LinearOpMode opMode, HardwareMap hardwareMap) {
         this.opMode = opMode;
 
-        leftMotor = hardwareMap.get(
-                DcMotor.class,
-                "leftMotor"
-        );
+        leftMotor = hardwareMap.get(DcMotor.class, "leftMotor");
+        rightMotor = hardwareMap.get(DcMotor.class, "rightMotor");
 
-        rightMotor = hardwareMap.get(
-                DcMotor.class,
-                "rightMotor"
-        );
-
-        /*
-         * Reverse one motor because the drivetrain motors are normally
-         * mounted as mirror images of each other.
-         */
+        // Motors are mounted opposite each other.
         leftMotor.setDirection(DcMotor.Direction.FORWARD);
         rightMotor.setDirection(DcMotor.Direction.REVERSE);
 
-        /*
-         * BRAKE helps the robot stop instead of freely coasting.
-         */
-        leftMotor.setZeroPowerBehavior(
-                DcMotor.ZeroPowerBehavior.BRAKE
-        );
-
-        rightMotor.setZeroPowerBehavior(
-                DcMotor.ZeroPowerBehavior.BRAKE
-        );
+        leftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         resetEncoders();
     }
 
-    /**
-     * Sets the power of both drivetrain motors.
-     *
-     * This method is used by BasicTeleOp.
-     */
-    public void setDrivePower(
-            double leftPower,
-            double rightPower
-    ) {
-        leftPower = Range.clip(
-                leftPower,
-                -1.0,
-                1.0
-        );
-
-        rightPower = Range.clip(
-                rightPower,
-                -1.0,
-                1.0
-        );
+    public void setDrivePower(double leftPower, double rightPower) {
+        leftPower = Range.clip(leftPower, -1.0, 1.0);
+        rightPower = Range.clip(rightPower, -1.0, 1.0);
 
         leftMotor.setPower(leftPower);
         rightMotor.setPower(rightPower);
     }
 
     /**
-     * Drives each side a specified number of inches.
-     *
-     * Positive distance drives forward.
-     * Negative distance drives backward.
+     * Drives each side a specified distance using encoders.
+     * Positive distances move forward; negative distances move backward.
      */
     public void driveInches(
             double speed,
@@ -111,59 +67,32 @@ public class BasicDrivetrain {
             return;
         }
 
-        double drivePower = Range.clip(
-                Math.abs(speed),
-                0.0,
-                1.0
-        );
+        double drivePower = Range.clip(Math.abs(speed), 0.0, 1.0);
 
-        /*
-         * Avoid waiting for the entire timeout if no usable command
-         * was provided.
-         */
         if (drivePower == 0.0 || timeoutSeconds <= 0.0) {
             stop();
             return;
         }
 
-        int newLeftTarget =
-                leftMotor.getCurrentPosition()
-                        + inchesToTicks(leftInches);
-
-        int newRightTarget =
-                rightMotor.getCurrentPosition()
-                        + inchesToTicks(rightInches);
+        int newLeftTarget = leftMotor.getCurrentPosition() + inchesToTicks(leftInches);
+        int newRightTarget = rightMotor.getCurrentPosition() + inchesToTicks(rightInches);
 
         leftMotor.setTargetPosition(newLeftTarget);
         rightMotor.setTargetPosition(newRightTarget);
 
-        leftMotor.setMode(
-                DcMotor.RunMode.RUN_TO_POSITION
-        );
-
-        rightMotor.setMode(
-                DcMotor.RunMode.RUN_TO_POSITION
-        );
+        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         runtime.reset();
 
         try {
-            /*
-             * RUN_TO_POSITION determines the required direction from
-             * each motor's current position and target position.
-             */
             leftMotor.setPower(drivePower);
             rightMotor.setPower(drivePower);
 
-            /*
-             * OR keeps the loop running until both motors finish.
-             * The timeout prevents the loop from running forever if
-             * one motor becomes stuck.
-             */
+            // Wait until both motors finish or the timeout expires.
             while (opMode.opModeIsActive()
                     && runtime.seconds() < timeoutSeconds
-                    && (leftMotor.isBusy()
-                    || rightMotor.isBusy())) {
+                    && (leftMotor.isBusy() || rightMotor.isBusy())) {
 
                 opMode.telemetry.addData(
                         "Target",
@@ -192,114 +121,45 @@ public class BasicDrivetrain {
         } finally {
             stop();
 
-            /*
-             * Return the motors to the mode used by TeleOp.
-             */
-            leftMotor.setMode(
-                    DcMotor.RunMode.RUN_USING_ENCODER
-            );
-
-            rightMotor.setMode(
-                    DcMotor.RunMode.RUN_USING_ENCODER
-            );
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
-    /**
-     * Drives both sides the same distance.
-     */
-    public void driveStraight(
-            double speed,
-            double inches,
-            double timeoutSeconds
-    ) {
-        driveInches(
-                speed,
-                inches,
-                inches,
-                timeoutSeconds
-        );
+    public void driveStraight(double speed, double inches, double timeoutSeconds) {
+        driveInches(speed, inches, inches, timeoutSeconds);
     }
 
     /**
-     * Turns the robot using encoder distances.
-     *
-     * Positive degrees turn clockwise.
-     * Negative degrees turn counterclockwise.
+     * Turns using encoder distances. Positive degrees turn clockwise.
      */
-    public void turnDegrees(
-            double speed,
-            double degrees,
-            double timeoutSeconds
-    ) {
-        double inches =
-                (degrees / 360.0)
-                        * TURN_CIRCUMFERENCE;
-
-        driveInches(
-                speed,
-                inches,
-                -inches,
-                timeoutSeconds
-        );
+    public void turnDegrees(double speed, double degrees, double timeoutSeconds) {
+        double inches = (degrees / 360.0) * TURN_CIRCUMFERENCE;
+        driveInches(speed, inches, -inches, timeoutSeconds);
     }
 
-    /**
-     * Returns the left encoder position.
-     *
-     * This method is used by BasicTeleOp telemetry.
-     */
     public int getLeftTicks() {
         return leftMotor.getCurrentPosition();
     }
 
-    /**
-     * Returns the right encoder position.
-     *
-     * This method is used by BasicTeleOp telemetry.
-     */
     public int getRightTicks() {
         return rightMotor.getCurrentPosition();
     }
 
-    /**
-     * Returns true while either motor is moving toward a target.
-     */
     public boolean isDriving() {
-        return leftMotor.isBusy()
-                || rightMotor.isBusy();
+        return leftMotor.isBusy() || rightMotor.isBusy();
     }
 
-    /**
-     * Resets both drivetrain encoders.
-     */
     public void resetEncoders() {
         stop();
 
-        leftMotor.setMode(
-                DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        );
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        rightMotor.setMode(
-                DcMotor.RunMode.STOP_AND_RESET_ENCODER
-        );
-
-        /*
-         * This must happen after STOP_AND_RESET_ENCODER.
-         * Otherwise, the motors remain in reset mode.
-         */
-        leftMotor.setMode(
-                DcMotor.RunMode.RUN_USING_ENCODER
-        );
-
-        rightMotor.setMode(
-                DcMotor.RunMode.RUN_USING_ENCODER
-        );
+        leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    /**
-     * Immediately sets both motor powers to zero.
-     */
     public void stop() {
         if (leftMotor != null) {
             leftMotor.setPower(0.0);
@@ -310,15 +170,7 @@ public class BasicDrivetrain {
         }
     }
 
-    /*
-     * The following methods allow autonomous programs to control
-     * an individual motor when needed.
-     */
-
-    public void setMotorSpeed(
-            Motor motor,
-            double speed
-    ) {
+    public void setMotorSpeed(Motor motor, double speed) {
         setPower(motor, speed);
     }
 
@@ -335,10 +187,7 @@ public class BasicDrivetrain {
         }
     }
 
-    public void setTargetPosition(
-            Motor motor,
-            int target
-    ) {
+    public void setTargetPosition(Motor motor, int target) {
         switch (motor) {
             case LEFT_MOTOR:
                 leftMotor.setTargetPosition(target);
@@ -350,10 +199,7 @@ public class BasicDrivetrain {
         }
     }
 
-    public void setPower(
-            Motor motor,
-            double power
-    ) {
+    public void setPower(Motor motor, double power) {
         power = Range.clip(power, -1.0, 1.0);
 
         switch (motor) {
@@ -367,10 +213,7 @@ public class BasicDrivetrain {
         }
     }
 
-    public void setMode(
-            Motor motor,
-            DcMotor.RunMode mode
-    ) {
+    public void setMode(Motor motor, DcMotor.RunMode mode) {
         switch (motor) {
             case LEFT_MOTOR:
                 leftMotor.setMode(mode);
@@ -395,12 +238,7 @@ public class BasicDrivetrain {
         }
     }
 
-    /**
-     * Converts inches into the nearest whole encoder count.
-     */
     private int inchesToTicks(double inches) {
-        return (int) Math.round(
-                inches * COUNTS_PER_INCH
-        );
+        return (int) Math.round(inches * COUNTS_PER_INCH);
     }
 }
