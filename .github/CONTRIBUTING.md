@@ -10,10 +10,39 @@ ALL of the team code should go in this folder:
 
 TeamCode &rarr; src &rarr; main &rarr; java &rarr; org.firstinspires.ftc.teamcode
 
-
 <u>Any code relating to the physical hardware connected to the robot should go in the **mechanisms** package inside that folder.</u> OpMode code will then use objects from that folder.
 
 NEVER edit any of the source files from the FtcRobotController folder or anything outside the TeamCode folder, as those are written by FIRST and editing them will cause the project to break.
+
+## 2. How to use a older version
+
+To revert to an older version on GitHub, you have two options: one for just temporarily viewing it, and another mostly permanent option if you need to use it a lot and edit the version. 
+
+**Option 1: Commit Checkout**
+
+This option is great if you just want to temporarily view the older code and run it <u>without editing anything</u>.
+
+1. Go to the last commit before the unwanted change in the History tab on the left bar of GitHub Desktop.
+
+2. Right click, and select "Checkout commit".
+
+3. Now, on Android Studio you will be able to view that older version.
+
+**CRUCIAL NOTE: NEVER edit anything while viewing this checked out commit. This is meant for VIEW ONLY.** 
+
+To return to the current version, in GitHub desktop go to the top and click the branch that would say "Detached HEAD", and choose a normal branch.
+
+**Option 2: Create a new branch**
+
+Choose this option if you need to frequently switch to this version and/or edit it.
+
+1. Once again in the History tab of Github desktop, go to the last commit before the unwanted change. 
+
+2. Right click, and choose "Create branch from commit".
+
+3. Publish this branch to GitHub.
+
+4. Now, this version acts as its own branch where you can edit and seamlessly switch back to it.
 
 ## 2. Do not update the Gradle or anything else related to the SDK
 
