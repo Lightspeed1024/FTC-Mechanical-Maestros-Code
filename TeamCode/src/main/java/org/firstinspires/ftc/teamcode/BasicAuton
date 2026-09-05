@@ -6,3 +6,43 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+@Auton
+public class BasicAuton extends LinearOpMode {
+    BasicDrivetrain drivetrain = new BasicDrivetrain();
+    private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
+    private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
+
+private void moveForward(long seconds){
+
+  leftDrive.setPower(FORWARD_SPEED);
+  rightDrive.setPower(FORWARD_SPEED);
+
+  sleep(seconds);
+
+  leftDrive.setPower(0);
+  rightDrive.setPower(0);
+}
+
+private void moveBackward(long seconds){
+
+  leftDrive.setPower(BACKWARD_SPEED);
+  rightDrive.setPower(BACKWARD_SPEED);
+
+  sleep(seconds);
+
+  leftDrive.setPower(0);
+  rightDrive.setPower(0);
+}
+
+private void moveRight(long seconds){
+
+  leftDrive.setPower(FORWARD_SPEED);
+  rightDrive.setPower(BACKWARD_SPEED);
+
+  sleep(seconds)
+
+  leftDrive.setPower(0);
+  rightDrive.setPower(0);
+}
+}
