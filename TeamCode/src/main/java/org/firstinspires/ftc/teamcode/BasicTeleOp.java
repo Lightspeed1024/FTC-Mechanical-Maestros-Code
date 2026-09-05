@@ -49,11 +49,11 @@ public class BasicTeleOp extends LinearOpMode {
 
                 // FTC reports forward movement of the left stick as a negative value.
                 double drive = fixJoystick(-gamepad1.left_stick_y);
-                double turn = fixJoystick(gamepad1.right_stick_x);
+                double turn = fixJoystick(-gamepad1.right_stick_x);
 
                 // Cubing makes small stick movements easier to control.
-                drive = drive * drive * drive;
-                turn = turn * turn * turn;
+                drive = Math.copySign(drive * drive, drive);
+                turn = Math.copySign(turn * turn, turn);
 
                 boolean slowMode = gamepad1.left_bumper;
                 double boostAmount = Range.clip(gamepad1.right_trigger, 0.0, 1.0);
@@ -102,21 +102,18 @@ public class BasicTeleOp extends LinearOpMode {
                 telemetry.addData("Drive Mode", driveMode);
                 telemetry.addData("Speed Limit", "%.0f%%", speedLimit * 100.0);
                 telemetry.addData("Right Trigger", "%.0f%%", boostAmount * 100.0);
-
                 telemetry.addData(
                         "Encoders",
                         "Left: %d  Right: %d",
                         drivetrain.getCurrentPosition(Motor.LEFT_MOTOR),
                         drivetrain.getCurrentPosition(Motor.RIGHT_MOTOR)
                 );
-
                 telemetry.addData(
                         "Motor Power",
                         "Left: %.2f  Right: %.2f",
                         drivetrain.getPower(Motor.LEFT_MOTOR),
                         drivetrain.getPower(Motor.RIGHT_MOTOR)
                 );
-
                 telemetry.update();
                 idle();
             }
