@@ -10,8 +10,6 @@ import org.firstinspires.ftc.teamcode.mechanisms.BasicDrivetrain.Motor;
 
 @TeleOp(name = "Basic TeleOp", group = "Drive")
 public class BasicTeleOp extends LinearOpMode {
-    private final BasicDrivetrain.Motor leftMotor = BasicDrivetrain.Motor.LEFT_MOTOR;
-    private final BasicDrivetrain.Motor rightMotor = BasicDrivetrain.Motor.RIGHT_MOTOR;
     private final BasicDrivetrain drivetrain = new BasicDrivetrain();
     private final ElapsedTime loopTimer = new ElapsedTime();
 
@@ -49,32 +47,33 @@ public class BasicTeleOp extends LinearOpMode {
                 double loopTime = Math.min(loopTimer.seconds(), 0.10);
                 loopTimer.reset();
 
-                // The Y value is reversed in FTC gamepad mapping.
+                // FTC reports forward movement of the left stick as a negative value.
                 double drive = fixJoystick(-gamepad1.left_stick_y);
                 double turn = fixJoystick(gamepad1.right_stick_x);
 
-                // Cubing gives more control at low speeds without reducing maximum speed.
+                // Cubing makes small stick movements easier to control.
                 drive = drive * drive * drive;
                 turn = turn * turn * turn;
 
                 boolean slowMode = gamepad1.left_bumper;
                 double boostAmount = Range.clip(gamepad1.right_trigger, 0.0, 1.0);
 
-                // The trigger gradually increases the speed limit from 75% to 100%.
+                // The trigger raises the speed limit from 75% to 100%.
                 double speedLimit = interpolate(NORMAL_SPEED, FAST_SPEED, boostAmount);
 
+                // Slow mode overrides the trigger.
                 if (slowMode) {
                     speedLimit = SLOW_SPEED;
                 }
 
-                // Reduce turning sensitivity while driving quickly.
+                // Turning is less sensitive while the robot is moving quickly.
                 double turnLimit = interpolate(TURN_SPEED, MOVING_TURN_SPEED, Math.abs(drive));
                 turn *= turnLimit;
 
                 double wantedLeftPower = drive + turn;
                 double wantedRightPower = drive - turn;
 
-                // Keep both powers in range without changing their relative ratio.
+                // Scale both powers equally if either one is above full power.
                 double biggestPower = Math.max(
                         Math.abs(wantedLeftPower),
                         Math.abs(wantedRightPower)
@@ -103,10 +102,17 @@ public class BasicTeleOp extends LinearOpMode {
                 telemetry.addData("Drive Mode", driveMode);
                 telemetry.addData("Speed Limit", "%.0f%%", speedLimit * 100.0);
                 telemetry.addData("Right Trigger", "%.0f%%", boostAmount * 100.0);
-                telemetry.addData("Encoders", "Left: %d  Right: %d",
-                        drivetrain.getCurrentPosition(leftMotor),
-                        drivetrain.getCurrentPosition(rightMotor));
-                telemetry.addData("Motor Power", "Left: %.2f  Right: %.2f",
+
+                telemetry.addData(
+                        "Encoders",
+                        "Left: %d  Right: %d",
+                        drivetrain.getCurrentPosition(Motor.LEFT_MOTOR),
+                        drivetrain.getCurrentPosition(Motor.RIGHT_MOTOR)
+                );
+
+                telemetry.addData(
+                        "Motor Power",
+                        "Left: %.2f  Right: %.2f",
                         drivetrain.getPower(Motor.LEFT_MOTOR),
                         drivetrain.getPower(Motor.RIGHT_MOTOR)
                 );
@@ -115,12 +121,13 @@ public class BasicTeleOp extends LinearOpMode {
                 idle();
             }
         } finally {
+            // Always stop the motors when TeleOp ends.
             drivetrain.stop();
         }
     }
 
     /**
-     * Removes the joystick dead zone while preserving its full output range.
+     * Removes small values caused by joystick drift while keeping the full range.
      */
     private double fixJoystick(double stickValue) {
         double amount = Math.abs(stickValue);
@@ -134,11 +141,10 @@ public class BasicTeleOp extends LinearOpMode {
     }
 
     /**
-     * A linear interpolation method that smoothly moves the start value towards the end value by a certain percent
-     * @param start The start value
-     * @param end The end value
-     * @param amount The percent to move from start to end, WRITTEN AS A DECIMAL
-     * @return The new value
+     * Finds a value between start and end.
+     *
+     * An amount of 0 returns start, 1 returns end, and 0.5 returns
+     * the value halfway between them.
      */
     private double interpolate(double start, double end, double amount) {
         amount = Range.clip(amount, 0.0, 1.0);
