@@ -103,14 +103,10 @@ public class BasicTeleOp extends LinearOpMode {
                 telemetry.addData("Drive Mode", driveMode);
                 telemetry.addData("Speed Limit", "%.0f%%", speedLimit * 100.0);
                 telemetry.addData("Right Trigger", "%.0f%%", boostAmount * 100.0);
-                telemetry.addData("Motor Power", "Left: %.2f  Right: %.2f", leftPower, rightPower);
                 telemetry.addData("Encoders", "Left: %d  Right: %d",
                         drivetrain.getCurrentPosition(leftMotor),
                         drivetrain.getCurrentPosition(rightMotor));
-
-                telemetry.addData(
-                        "Motor Power",
-                        "Left: %.2f  Right: %.2f",
+                telemetry.addData("Motor Power", "Left: %.2f  Right: %.2f",
                         drivetrain.getPower(Motor.LEFT_MOTOR),
                         drivetrain.getPower(Motor.RIGHT_MOTOR)
                 );

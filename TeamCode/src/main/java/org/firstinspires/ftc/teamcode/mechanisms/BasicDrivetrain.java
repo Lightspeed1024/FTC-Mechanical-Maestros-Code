@@ -135,7 +135,7 @@ public class BasicDrivetrain {
                     && runtime.seconds() < timeoutSeconds
                     && (isBusy(Motor.LEFT_MOTOR) || isBusy(Motor.RIGHT_MOTOR))) {
 
-                opMode.telemetry.addData("Target", "Left: %d  Right: %d", newLeftTarget, newRightTarget);
+                opMode.telemetry.addData("Target", "Left: %d  Right: %d", leftTarget, rightTarget);
                 opMode.telemetry.addData("Position", "Left: %d  Right: %d", leftMotor.getCurrentPosition(), rightMotor.getCurrentPosition());
                 opMode.telemetry.addData("Time", "%.1f / %.1f seconds", runtime.seconds(), timeoutSeconds);
                 opMode.telemetry.update();
@@ -211,67 +211,32 @@ public class BasicDrivetrain {
     }
 
     public void setTargetPosition(Motor motor, int target) {
-        getMotor(motor).setTargetPosition(target);
+        switch (motor) {
+            case LEFT_MOTOR: leftMotor.setTargetPosition(target);
+            case RIGHT_MOTOR: rightMotor.setTargetPosition(target);
+        }
     }
 
     public void setPower(Motor motor, double power) {
         double clippedPower = Range.clip(power, -1.0, 1.0);
         switch (motor) {
-            case LEFT_MOTOR: leftPower = clippedPower; break;
-            case RIGHT_MOTOR: rightPower = clippedPower; break;
+            case LEFT_MOTOR: leftMotor.setPower(power); break;
+            case RIGHT_MOTOR: rightMotor.setPower(power); break;
         }
-
-        getMotor(motor).setPower(clippedPower);
     }
 
     public void setMode(Motor motor, DcMotor.RunMode mode) {
-        getMotor(motor).setMode(mode);
+        switch (motor) {
+            case LEFT_MOTOR: leftMotor.setMode(mode);
+            case RIGHT_MOTOR: rightMotor.setMode(mode);
+        }
     }
 
     public boolean isBusy(Motor motor) {
-         return getMotor(motor).isBusy();
-
-    }
-
-    /**
-     * Gradually changes motor power instead of changing it instantly.
-     */
-    private double smoothPower(
-            double currentPower,
-            double wantedPower,
-            double loopTime
-    ) {
-        boolean changingDirection = currentPower != 0.0
-                && wantedPower != 0.0
-                && Math.signum(currentPower) != Math.signum(wantedPower);
-
-        boolean slowingDown = Math.abs(wantedPower) < Math.abs(currentPower);
-
-        double rate = changingDirection || slowingDown
-                ? SLOW_DOWN_RATE
-                : SPEED_UP_RATE;
-
-        return moveToward(currentPower, wantedPower, rate * loopTime);
-    }
-
-    /**
-     * Moves a value toward a target by no more than maximumChange.
-     */
-    private double moveToward(double current, double target, double maximumChange) {
-        double change = Range.clip(target - current, -maximumChange, maximumChange);
-        return current + change;
-    }
-
-    private DcMotor getMotor(Motor motor) {
         switch (motor) {
-            case LEFT_MOTOR:
-                return leftMotor;
-
-            case RIGHT_MOTOR:
-                return rightMotor;
-
-            default:
-                throw new IllegalArgumentException("Unknown drivetrain motor");
+            case RIGHT_MOTOR: return rightMotor.isBusy();
+            case LEFT_MOTOR: return  leftMotor.isBusy();
+            default: return false;
         }
     }
 
